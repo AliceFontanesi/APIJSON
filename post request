@@ -1,1 +1,6 @@
-curl -X POST -H "Content-Type: application/json" -d "{\"name\": \"Prodotto\", \"price\": 10}" http://127.0.0.1:5000/products
+curl -X POST -H "Content-Type: application/json" -d "{\"nome\": \"Prodotto\", \"prezzo\": 10 , \"marca\": \"marca\"}" http://127.0.0.1:5000/products
+
+curl -X GET  http://127.0.0.1:5000/products
+
+curl -X GET  http://127.0.0.1:5000/products/3
+

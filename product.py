@@ -71,13 +71,16 @@ class Product:
             print("Errore durante l'eliminazione del prodotto:", str(e))
 
     @staticmethod
-    def create(cls, nome, prezzo, marca): #fare dopo
+    def create(product_data): #fatto
         try:
-            conn = cls.connector()
+            conn = Product.connector()
             cursor = conn.cursor()
-            cursor.execute("INSERT INTO products (nome, prezzo, marca) VALUES (%s, %s, %s)", (nome, prezzo, marca))
+            cursor.execute("INSERT INTO products (nome, prezzo, marca) VALUES (%s, %s, %s)", (product_data['nome'], product_data['prezzo'], product_data['marca']))
             conn.commit()
+            product_id = cursor.lastrowid
             conn.close()
+            product_data['id'] = product_id
+            return product_data
         except mysql.connector.Error as e:
             print("Errore durante la creazione del prodotto:", str(e))
 

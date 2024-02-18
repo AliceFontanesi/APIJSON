@@ -32,29 +32,23 @@ def get_product(product_id):
 
 
 
-@app.route('/products', methods = ['POST'])
+@app.route('/products', methods=['POST'])
 def create_product():
     if not request.json:
-        return jsonify({'error': 'Richiesta deve essere in formato JSON'}), 400
-    
-    # Estrai i dati dal corpo della richiesta JSON
-    product_data = request.json
-    if not product_data:
-        return jsonify({'error': 'Dati non forniti'}), 400
-    
-    # Estrai i dati specifici del prodotto
-    #product_data = data.get('attributes')
-    #f not product_data:
-        #return jsonify({'error': 'Attributi del prodotto non forniti'}), 400
-    
-    # Creazione del nuovo prodotto
+        return jsonify({'error': 'La richiesta deve essere in formato JSON'}), 400
+
+    if 'nome' not in request.json or 'prezzo' not in request.json or 'marca' not in request.json:
+        return jsonify({'error': 'Dati incompleti'}), 400
+
     new_product = {
-        'marca': product_data.get('marca'),
-        'nome': product_data.get('nome'),
-        'prezzo': product_data.get('prezzo')
+        'nome': request.json['nome'],
+        'prezzo': request.json['prezzo'],
+        'marca': request.json['marca']
     }
     
-    return new_product
+    product = Product.create(new_product)
+
+    return jsonify(product), 201 
 
 
 if __name__ == '__main__':
