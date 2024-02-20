@@ -18,6 +18,7 @@ class RequestHandler(BaseHTTPRequestHandler):
             self.get_product(product_id)
         else:
             self.send_error(404, 'Not Found')
+            
 
     def get_products(self):
         records = Product.fetchAll()
@@ -27,15 +28,23 @@ class RequestHandler(BaseHTTPRequestHandler):
         self._set_response()
         self.wfile.write(json.dumps({'data': products_list}).encode('utf-8'))
 
+
+
     def get_product(self, product_id):
-        record = Product.find(product_id)
-        if record:
-            keys = ["id", "nome", "prezzo", "marca"]
-            product_dict = {key: value for key, value in zip(keys, record)}
+        product = Product.find(product_id)
+        if product is not None:
+            product_dict = {
+                'id': product.id,
+                'nome': product.nome,
+                'prezzo': product.prezzo,
+                'marca': product.marca
+            }
             self._set_response()
             self.wfile.write(json.dumps(product_dict).encode('utf-8'))
         else:
             self.send_error(404, 'Product Not Found')
+            
+            
 
     def do_POST(self):
         if self.path == '/products':
@@ -61,6 +70,32 @@ class RequestHandler(BaseHTTPRequestHandler):
             self.wfile.write(json.dumps(product).encode('utf-8'))
         except json.JSONDecodeError:
             self.send_error(400, 'Bad Request - Invalid JSON')
+            
+            
+    def do_DELETE(self):
+        if self.path.startswith('/products/'):
+            parts = self.path.split('/')
+            product_id = int(parts[2])
+            product = Product.find(product_id)
+            if product:
+                self.delete_product(product)
+            else:
+                self.send_error(404, 'Product Not Found')
+        else:
+            self.send_error(404, 'Not Found')
+            
+
+
+    def delete_product(self, product):
+        try:
+            product.delete()
+            self._set_response(status_code=204)  # No Content
+        except Exception as e:
+            self.send_error(500, f'Internal Server Error: {str(e)}')
+        
+        
+        
+            
 
 def run(server_class=HTTPServer, handler_class=RequestHandler, port=8000):
     server_address = ('', port)

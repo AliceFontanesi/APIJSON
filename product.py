@@ -12,28 +12,44 @@ class Product:
             return conn
         except mysql.connector.Error as e:
             print("Errore durante la connessione al database:", str(e))
+            
+    def __init__(self, id, nome, prezzo, marca):
+        self.id = id
+        self.nome = nome
+        self.prezzo = prezzo
+        self.marca = marca
     
-    # Metodi getter e setter per gli attributi id, name, price e brand
-    def get_id(self):
+    @property
+    def id(self):
         return self._id
 
-    def get_name(self):
-        return self._name
+    @id.setter
+    def id(self, value):
+        self._id = value
 
-    def set_name(self, name):
-        self._name = name
+    @property
+    def nome(self):
+        return self._nome
 
-    def get_price(self):
-        return self._price
+    @nome.setter
+    def nome(self, value):
+        self._nome = value
 
-    def set_price(self, price):
-        self._price = price
+    @property
+    def prezzo(self):
+        return self._prezzo
 
-    def get_brand(self):
-        return self._brand
+    @prezzo.setter
+    def prezzo(self, value):
+        self._prezzo = value
 
-    def set_brand(self, brand):
-        self._brand = brand
+    @property
+    def marca(self):
+        return self._marca
+
+    @marca.setter
+    def marca(self, value):
+        self._marca = value
 
     @staticmethod
     def fetchAll(): #fatto
@@ -48,27 +64,20 @@ class Product:
             print("Errore durante la ricerca dei prodotti:", str(e))
 
     @staticmethod
-    def find(id): #fatto
+    def find(id):
         try:
             conn = Product.connector()
             cursor = conn.cursor()
             cursor.execute("SELECT * FROM products WHERE id = %s", (id,))
             row = cursor.fetchone()
             conn.close()
-            return row
+            if row:
+                return Product(id=row[0], nome=row[1], prezzo=row[2], marca=row[3])
+            else:
+                return None
         except mysql.connector.Error as e:
             print("Errore durante la ricerca del prodotto:", str(e))
-
-    
-    def delete(self): #rivedere
-        try:
-            conn = self.connector()
-            cursor = conn.cursor()
-            cursor.execute("DELETE FROM products WHERE id = %s", (self.get_id,))
-            conn.commit()
-            conn.close()
-        except mysql.connector.Error as e:
-            print("Errore durante l'eliminazione del prodotto:", str(e))
+            
 
     @staticmethod
     def create(product_data): #fatto
