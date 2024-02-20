@@ -103,3 +103,15 @@ class Product:
             conn.close()
         except mysql.connector.Error as e:
             print("Errore durante l'aggiornamento del prodotto:", str(e))
+            
+    def delete(self):
+        try:
+            conn = Product.connector()
+            cursor = conn.cursor()
+            cursor.execute("DELETE FROM products WHERE id = %s", (self.id,))
+            conn.commit()
+            conn.close()
+            print("Prodotto eliminato con successo.")
+        except mysql.connector.Error as e:
+            print("Errore durante l'eliminazione del prodotto:", str(e))
+
