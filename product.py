@@ -7,7 +7,7 @@ class Product:
     @staticmethod
     def connector():
         try:
-            db_manager = DbManager("localhost", 3306, "alice", "pass_db1616!", "ecommerce5E")
+            db_manager = DbManager("192.168.2.200", 3306, "fontanesi_alice", "Sevastopol.immodesty.Floyd.", "fontanesi_alice_ecommerce")
             conn = db_manager.connect()
             return conn
         except mysql.connector.Error as e:
@@ -23,7 +23,7 @@ class Product:
     def id(self):
         return self._id
 
-    @id.setter
+    @id.setter #togliere
     def id(self, value):
         self._id = value
 
@@ -52,7 +52,7 @@ class Product:
         self._marca = value
 
     @staticmethod
-    def fetchAll(): #fatto
+    def fetchAll(): #ok
         try: 
             conn = Product.connector()
             cursor = conn.cursor()
@@ -64,7 +64,7 @@ class Product:
             print("Errore durante la ricerca dei prodotti:", str(e))
 
     @staticmethod
-    def find(id):
+    def find(id): #ok
         try:
             conn = Product.connector()
             cursor = conn.cursor()
@@ -80,7 +80,7 @@ class Product:
             
 
     @staticmethod
-    def create(product_data): #fatto
+    def create(product_data): #ok
         try:
             conn = Product.connector()
             cursor = conn.cursor()
@@ -93,25 +93,23 @@ class Product:
         except mysql.connector.Error as e:
             print("Errore durante la creazione del prodotto:", str(e))
 
-    @classmethod
-    def update(cls, id, nome, prezzo, marca): #rivedere
+    def update(self, product_data): #ok
         try:
-            conn = cls.connector()
+            conn = Product.connector()
             cursor = conn.cursor()
-            cursor.execute("UPDATE products SET nome = %s, prezzo = %s, marca = %s WHERE id = %s", (nome, prezzo, marca, id))
+            cursor.execute("UPDATE products SET marca = %s WHERE id = %s", (product_data['marca'], self.id,))
             conn.commit()
             conn.close()
         except mysql.connector.Error as e:
             print("Errore durante l'aggiornamento del prodotto:", str(e))
             
-    def delete(self):
+    def delete(self): #ok
         try:
             conn = Product.connector()
             cursor = conn.cursor()
             cursor.execute("DELETE FROM products WHERE id = %s", (self.id,))
             conn.commit()
             conn.close()
-            print("Prodotto eliminato con successo.")
         except mysql.connector.Error as e:
             print("Errore durante l'eliminazione del prodotto:", str(e))
 

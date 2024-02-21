@@ -85,17 +85,50 @@ class RequestHandler(BaseHTTPRequestHandler):
             self.send_error(404, 'Not Found')
             
 
-
     def delete_product(self, product):
         try:
             product.delete()
             self._set_response(status_code=204)  # No Content
         except Exception as e:
             self.send_error(500, f'Internal Server Error: {str(e)}')
-        
-        
-        
+
+
+    def do_PATCH(self):
+        if self.path.startswith('/products/'):
+            parts = self.path.split('/')
+            product_id = int(parts[2])
+            product = Product.find(product_id)
+            if product:
+                self.update_product(product)
+            else:
+                self.send_error(404, 'Product Not Found')
+        else:
+            self.send_error(404, 'Not Found')
+
+
             
+    def update_product(self, product):
+        try:
+            content_length = int(self.headers['Content-Length'])
+            patch_data = self.rfile.read(content_length)
+            data = json.loads(patch_data.decode('utf-8'))
+            
+            if 'marca' not in data:
+                self.send_error(400, 'Bad Request - Incomplete Data')
+                return
+            new_product = {
+                'marca': data['marca']
+            }
+                
+            product.update(new_product)
+            #response = Product.find(data['id'])
+
+            self._set_response(status_code=204)  # No Content
+        except Exception as e:
+            self.send_error(500, f'Internal Server Error: {str(e)}')
+        
+        
+        
 
 def run(server_class=HTTPServer, handler_class=RequestHandler, port=8000):
     server_address = ('', port)
