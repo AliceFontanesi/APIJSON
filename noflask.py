@@ -121,9 +121,10 @@ class RequestHandler(BaseHTTPRequestHandler):
             }
                 
             product.update(new_product)
-            #response = Product.find(data['id'])
+            self.get_product(product.id)
 
-            self._set_response(status_code=204)  # No Content
+
+            #self._set_response(status_code=204)  # No Content
         except Exception as e:
             self.send_error(500, f'Internal Server Error: {str(e)}')
         
