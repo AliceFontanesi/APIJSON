@@ -20,13 +20,29 @@ class RequestHandler(BaseHTTPRequestHandler):
             self.send_error(404, 'Not Found')
             
 
+
     def get_products(self):
         records = Product.fetchAll()
-        keys = ["id", "nome", "prezzo", "marca"]
-        products_list = [{key: value for key, value in zip(keys, record)} for record in records]
-        
+        products_list = []
+        for record in records:
+            product_dict = {
+                "type": "products",
+                "id": str(record[0]),  
+                "attributes": {
+                    "marca": record[3],  
+                    "nome": record[1],  
+                    "prezzo": record[2]  
+                }
+            }
+            products_list.append(product_dict)
+
         self._set_response()
-        self.wfile.write(json.dumps({'data': products_list}).encode('utf-8'))
+        self.end_headers()
+
+        response_data = {'data': products_list}
+        self.wfile.write(json.dumps(response_data).encode('utf-8'))
+
+
 
 
 
@@ -34,17 +50,32 @@ class RequestHandler(BaseHTTPRequestHandler):
         product = Product.find(product_id)
         if product is not None:
             product_dict = {
-                'id': product.id,
-                'nome': product.nome,
-                'prezzo': product.prezzo,
-                'marca': product.marca
+                "type": "products",
+                "id": str(product.id),  
+                "attributes": {
+                    "marca": product.marca,  
+                    "nome": product.nome,  
+                    "prezzo": product.prezzo  
+                }
             }
+            
             self._set_response()
-            self.wfile.write(json.dumps(product_dict).encode('utf-8'))
+            self.end_headers()
+
+            response_data = {'data': product_dict}
+            self.wfile.write(json.dumps(response_data).encode('utf-8'))
         else:
             self.send_error(404, 'Product Not Found')
             
             
+
+
+
+
+
+
+
+
 
     def do_POST(self):
         if self.path == '/products':
@@ -53,23 +84,57 @@ class RequestHandler(BaseHTTPRequestHandler):
             self.create_product(post_data)
         else:
             self.send_error(404, 'Not Found')
+            
+            
+            
+            
+            
 
     def create_product(self, post_data):
         try:
             data = json.loads(post_data.decode('utf-8'))
-            if 'nome' not in data or 'prezzo' not in data or 'marca' not in data:
-                self.send_error(400, 'Bad Request - Incomplete Data')
+            if 'data' not in data or 'attributes' not in data['data'] or 'nome' not in data['data']['attributes'] or 'prezzo' not in data['data']['attributes'] or 'marca' not in data['data']['attributes']:
+                self.send_error(400, 'Bad Request - Incomplete Data Request')
                 return
-            new_product = {
-                'nome': data['nome'],
-                'prezzo': data['prezzo'],
-                'marca': data['marca']
+            
+            attributes = data['data']['attributes']
+            new_product = {#questo si può togliere
+                'nome': attributes['nome'],
+                'prezzo': attributes['prezzo'],
+                'marca': attributes['marca']
             }
             product = Product.create(new_product)
+            
+            response = {
+                "data": {
+                    "type": "products",
+                    "id": str(product['id']),  
+                    "attributes": {
+                        "marca": product['marca'],
+                        "nome": product['nome'],
+                        "prezzo": str(product['prezzo'])  
+                    }
+                }
+            }
+            
+            
             self._set_response(status_code=201)
-            self.wfile.write(json.dumps(product).encode('utf-8'))
+            self.wfile.write(json.dumps(response).encode('utf-8'))
         except json.JSONDecodeError:
             self.send_error(400, 'Bad Request - Invalid JSON')
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
             
             
     def do_DELETE(self):

@@ -7,7 +7,7 @@ class Product:
     @staticmethod
     def connector():
         try:
-            db_manager = DbManager("192.168.2.200", 3306, "fontanesi_alice", "Sevastopol.immodesty.Floyd.", "fontanesi_alice_ecommerce")
+            db_manager = DbManager("localhost", 3306, "alice", "pass_db1616!", "ecommerce5E")
             conn = db_manager.connect()
             return conn
         except mysql.connector.Error as e:
@@ -97,7 +97,7 @@ class Product:
         try:
             conn = Product.connector()
             cursor = conn.cursor()
-            cursor.execute("UPDATE products SET marca = %s WHERE id = %s", (product_data['marca'], self.id,))
+            cursor.execute("UPDATE products SET marca = %s, nome = %s, prezzo = %s WHERE id = %s", (product_data['marca'], product_data['nome'], product_data['prezzo'], self.id,))
             conn.commit()
             conn.close()
         except mysql.connector.Error as e:

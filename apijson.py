@@ -27,11 +27,6 @@ def get_product(product_id):
     return jsonify(product_dict)
 
 
-
-
-
-
-
 @app.route('/products', methods=['POST'])
 def create_product():
     if not request.json:
