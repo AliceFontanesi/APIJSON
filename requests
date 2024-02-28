@@ -30,7 +30,7 @@ curl -X POST -d "{\"nome\": \"Prodotto\", \"prezzo\": 10 , \"marca\": \"marca\"}
 
 
 
-
+curl -X PATCH -H "Content-Type: application/json" -d '{"data": {"type": "product","attributes": {"marca": "nuova_marca","nome": "nuovo_nome","prezzo": "11"}}}' http://localhost:8000/products/113
 
 
 

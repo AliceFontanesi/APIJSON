@@ -14,18 +14,14 @@ class Product:
             print("Errore durante la connessione al database:", str(e))
             
     def __init__(self, id, nome, prezzo, marca):
-        self.id = id
-        self.nome = nome
-        self.prezzo = prezzo
-        self.marca = marca
+        self._id = id
+        self._nome = nome
+        self._prezzo = prezzo
+        self._marca = marca
     
     @property
     def id(self):
         return self._id
-
-    @id.setter #togliere
-    def id(self, value):
-        self._id = value
 
     @property
     def nome(self):
@@ -52,7 +48,7 @@ class Product:
         self._marca = value
 
     @staticmethod
-    def fetchAll(): #ok
+    def fetchAll(): 
         try: 
             conn = Product.connector()
             cursor = conn.cursor()
@@ -64,7 +60,7 @@ class Product:
             print("Errore durante la ricerca dei prodotti:", str(e))
 
     @staticmethod
-    def find(id): #ok
+    def find(id): 
         try:
             conn = Product.connector()
             cursor = conn.cursor()
@@ -80,7 +76,7 @@ class Product:
             
 
     @staticmethod
-    def create(product_data): #ok
+    def create(product_data): 
         try:
             conn = Product.connector()
             cursor = conn.cursor()
@@ -93,7 +89,7 @@ class Product:
         except mysql.connector.Error as e:
             print("Errore durante la creazione del prodotto:", str(e))
 
-    def update(self, product_data): #ok
+    def update(self, product_data): 
         try:
             conn = Product.connector()
             cursor = conn.cursor()
@@ -103,7 +99,7 @@ class Product:
         except mysql.connector.Error as e:
             print("Errore durante l'aggiornamento del prodotto:", str(e))
             
-    def delete(self): #ok
+    def delete(self): 
         try:
             conn = Product.connector()
             cursor = conn.cursor()

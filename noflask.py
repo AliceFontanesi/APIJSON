@@ -98,12 +98,7 @@ class RequestHandler(BaseHTTPRequestHandler):
                 return
             
             attributes = data['data']['attributes']
-            new_product = {#questo si può togliere
-                'nome': attributes['nome'],
-                'prezzo': attributes['prezzo'],
-                'marca': attributes['marca']
-            }
-            product = Product.create(new_product)
+            product = Product.create(attributes)
             
             response = {
                 "data": {
@@ -112,7 +107,7 @@ class RequestHandler(BaseHTTPRequestHandler):
                     "attributes": {
                         "marca": product['marca'],
                         "nome": product['nome'],
-                        "prezzo": str(product['prezzo'])  
+                        "prezzo": product['prezzo']  
                     }
                 }
             }
@@ -178,20 +173,34 @@ class RequestHandler(BaseHTTPRequestHandler):
             patch_data = self.rfile.read(content_length)
             data = json.loads(patch_data.decode('utf-8'))
             
-            if 'marca' not in data:
-                self.send_error(400, 'Bad Request - Incomplete Data')
+            
+            if 'data' not in data or 'attributes' not in data['data'] or 'nome' not in data['data']['attributes'] or 'prezzo' not in data['data']['attributes'] or 'marca' not in data['data']['attributes']:
+                self.send_error(400, 'Bad Request - Incomplete Data Request')
                 return
-            new_product = {
-                'marca': data['marca']
-            }
+            
+            attributes = data['data']['attributes']
                 
-            product.update(new_product)
-            self.get_product(product.id)
+            product.update(attributes)
+            
+            product_dict = {
+                "type": "products",
+                "id": str(product.id),  
+                "attributes": {
+                    "marca": product.marca,  
+                    "nome": product.nome,  
+                    "prezzo": product.prezzo  
+                }
+            }
+            
+            self._set_response()
+            self.end_headers()
 
-
-            #self._set_response(status_code=204)  # No Content
+            response_data = {'data': product_dict}
+            self.wfile.write(json.dumps(response_data).encode('utf-8'))
         except Exception as e:
             self.send_error(500, f'Internal Server Error: {str(e)}')
+            
+            
         
         
         
