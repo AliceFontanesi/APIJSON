@@ -55,7 +55,11 @@ class Product:
             cursor.execute("SELECT * FROM products")
             records = cursor.fetchall()
             cursor.close()
-            return records
+            products = []
+            for row in records:
+                product = Product(id=row[0], nome=row[1], prezzo=row[2], marca=row[3])
+                products.append(product)
+            return products
         except mysql.connector.Error as e:
             print("Errore durante la ricerca dei prodotti:", str(e))
 
@@ -84,8 +88,8 @@ class Product:
             conn.commit()
             product_id = cursor.lastrowid
             conn.close()
-            product_data['id'] = product_id
-            return product_data
+            #product_data['id'] = product_id
+            return Product(id=product_id, nome=product_data["nome"], prezzo=product_data["prezzo"], marca=product_data["marca"])
         except mysql.connector.Error as e:
             print("Errore durante la creazione del prodotto:", str(e))
 
