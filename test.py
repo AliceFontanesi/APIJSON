@@ -41,7 +41,7 @@ def test_delete():
     product = Product.find(3)
     product.delete()
     try:
-        product.find(2)
+        product.find(3)
         assert False
     except mysql.connector.Error:
         assert True
