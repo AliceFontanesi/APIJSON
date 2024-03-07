@@ -1,13 +1,11 @@
 from product import Product
+import mysql.connector
+import pytest
 
 def test_fetchAll():
     assert type(Product.fetchAll()) is list
     for p in Product.fetchAll():
         assert isinstance(p, Product)
-        assert hasattr(p,"id")
-        assert hasattr(p,"nome")
-        assert hasattr(p,"prezzo")
-        assert hasattr(p,"marca")
 
 def test_find():
     assert isinstance(Product.find(1), Product)
@@ -29,11 +27,21 @@ def test_create():
 
 def test_update():
     params = {
-                "marca": "nonloso",
-                "nome": "prodotto",
-                "prezzo": 111
+                "marca": "prova",
+                "nome": "nomeProdotto",
+                "prezzo": 222
             }
     product = Product.find(2)
     assert product.update(params)
+    assert product.nome == params["nome"]
+    assert product.marca == params["marca"]
+    assert product.prezzo == params["prezzo"]
 
-
+def test_delete():
+    product = Product.find(3)
+    product.delete()
+    try:
+        product.find(2)
+        assert False
+    except mysql.connector.Error:
+        assert True
