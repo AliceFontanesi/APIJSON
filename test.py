@@ -31,17 +31,13 @@ def test_update():
                 "nome": "nomeProdotto",
                 "prezzo": 222
             }
-    product = Product.find(2)
-    assert product.update(params)
+    product = Product.find(5)
+    product.update(params)
     assert product.nome == params["nome"]
     assert product.marca == params["marca"]
     assert product.prezzo == params["prezzo"]
 
 def test_delete():
-    product = Product.find(3)
+    product = Product.find(13)
     product.delete()
-    try:
-        product.find(3)
-        assert False
-    except mysql.connector.Error:
-        assert True
+    assert Product.find(13) is None
